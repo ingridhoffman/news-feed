@@ -6,9 +6,10 @@ import React, { useState, useEffect } from "react";
 //local
 import "./App.css";
 import API from "./util/api";
+import { ResultContainer, ResultCard } from "./components/results";
 
 // custom types
-interface NewsItem {
+export interface NewsItem {
 	id: string;
 	date: string;
 	title: string;
@@ -42,18 +43,20 @@ const processNewsResults = (res: any): NewsFeed => {
 
 function App() {
 	const [loading, setLoading] = useState<boolean>(true);
-	const [newsResults, setNewsResults] = useState({});
+	const [newsResults, setNewsResults] = useState<NewsFeed>();
 
 	useEffect(() => {
 		API.guardianContent()
 			.then((res) => {
 				let newResults: NewsFeed = processNewsResults(res.data.response);
-				console.log(" new results: ", newResults);
 				setNewsResults(newResults);
 				setLoading(false);
 			})
 			.catch((err) => {
 				console.log("error: ", err.code);
+				// for now, api errors are all handled by setting loading as complete and not setting results
+				// eventually differnt errors could be handled more specifically with an error state
+				setLoading(false);
 			});
 	}, []);
 
@@ -61,7 +64,23 @@ function App() {
 		console.log("news state: ", newsResults);
 	}, [newsResults]);
 
-	return <div className="App"></div>;
+	return (
+		<div className="App">
+			{loading ? (
+				"Please wait while we load your results..."
+			) : !newsResults ? (
+				"We are sorry. Something has gone wrong. Please try your search again later."
+			) : (
+				<ResultContainer>
+					{newsResults.results.length
+						? newsResults.results.map((result: NewsItem) => {
+								return <ResultCard key={result.id} {...result} />;
+						  })
+						: "No results match your search criteria. Please try a different search."}
+				</ResultContainer>
+			)}
+		</div>
+	);
 }
 
 export default App;
