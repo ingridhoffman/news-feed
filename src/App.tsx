@@ -7,6 +7,8 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import API from "./util/api";
 import { ResultContainer, ResultCard } from "./components/results";
+import { ControlBar } from "./components/controls";
+import { type } from "node:os";
 
 // custom types
 export interface NewsItem {
@@ -45,8 +47,8 @@ function App() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [newsResults, setNewsResults] = useState<NewsFeed>();
 
-	useEffect(() => {
-		API.guardianContent()
+	const fetchNewsContent = (search: string, page: number) => {
+		API.guardianContent(search, page)
 			.then((res) => {
 				let newResults: NewsFeed = processNewsResults(res.data.response);
 				setNewsResults(newResults);
@@ -58,7 +60,24 @@ function App() {
 				// eventually differnt errors could be handled more specifically with an error state
 				setLoading(false);
 			});
+	};
+
+	// get first page of content on page load (default per api so no page parameter needed)
+	useEffect(() => {
+		fetchNewsContent("", 1);
 	}, []);
+
+	// get specified page of content
+	const handlePageChange = (goTo: -1 | 1): void => {
+		// this function will only be called when there are news results so is there a better way to avoid typescript error that it might be undefined??
+		if (newsResults) {
+			let newPage: number = newsResults.page + goTo;
+			// prefer to disable buttons so these conditions will always be met
+			if (newPage >= 1 && newPage <= newsResults.totalPages) {
+				fetchNewsContent("", newPage);
+			}
+		}
+	};
 
 	useEffect(() => {
 		console.log("news state: ", newsResults);
@@ -71,13 +90,16 @@ function App() {
 			) : !newsResults ? (
 				"We are sorry. Something has gone wrong. Please try your search again later."
 			) : (
-				<ResultContainer>
-					{newsResults.results.length
-						? newsResults.results.map((result: NewsItem) => {
-								return <ResultCard key={result.id} {...result} />;
-						  })
-						: "No results match your search criteria. Please try a different search."}
-				</ResultContainer>
+				<>
+					<ControlBar goBack={() => handlePageChange(-1)} goNext={() => handlePageChange(1)} />
+					<ResultContainer>
+						{newsResults.results.length
+							? newsResults.results.map((result: NewsItem) => {
+									return <ResultCard key={result.id} {...result} />;
+							  })
+							: "No results match your search criteria. Please try a different search."}
+					</ResultContainer>
+				</>
 			)}
 		</div>
 	);
