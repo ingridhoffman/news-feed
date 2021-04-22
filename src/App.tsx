@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+/** @format */
+
+//global
+import React, { useState, useEffect } from "react";
+
+//local
+import "./App.css";
+import API from "./util/api";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [loading, setLoading] = useState<boolean>(true);
+	const [newsContent, setNewsContent] = useState({});
+
+	useEffect(() => {
+		API.guardianContent()
+			.then((res) => {
+				console.log("results: ", res);
+			})
+			.catch((err) => {
+				console.log("error: ", err.code);
+			});
+	}, []);
+
+	return <div className="App"></div>;
 }
 
 export default App;
