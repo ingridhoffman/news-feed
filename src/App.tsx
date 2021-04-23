@@ -94,6 +94,7 @@ function App() {
 	}, [newsResults]);
 
 	return (
+		// !bug - entire page is refreshing and "bouncing" every time a button is clicked
 		// ui - styled messages component should be created for loading and errors
 		<>
 			<header>
