@@ -17,28 +17,26 @@ interface controlProps {
 
 export const ControlBar = ({ goBack, goNext, handleInput, handleSearch }: controlProps) => {
 	return (
+		// ux consderations - not optimized for mobile, need page controls at bottom of feed or implement bottomless scroll
 		<Navbar bg="light" expand="lg">
-			<Navbar.Toggle aria-controls="basic-navbar-nav" />
-			<Navbar.Collapse id="basic-navbar-nav">
-				<Nav className="mr-auto">
-					<Pagination>
-						<Pagination.Prev onClick={goBack} />
-						<Pagination.Next onClick={goNext} />
-					</Pagination>
-				</Nav>
-				<Form inline onSubmit={handleSearch}>
-					<Form.Control
-						as="input"
-						type="text"
-						placeholder="Search"
-						className="mr-sm-2"
-						onChange={handleInput}
-					/>
-					<Button variant="outline-success" type="submit">
-						Search
-					</Button>
-				</Form>
-			</Navbar.Collapse>
+			<Nav className="mr-auto">
+				<Pagination className="my-0">
+					<Pagination.Prev onClick={goBack} />
+					<Pagination.Next onClick={goNext} />
+				</Pagination>
+			</Nav>
+			<Form inline onSubmit={handleSearch}>
+				<Form.Control
+					as="input"
+					type="text"
+					placeholder="Search"
+					className="mr-sm-2"
+					onChange={handleInput}
+				/>
+				<Button variant="outline-success" type="submit">
+					Search
+				</Button>
+			</Form>
 		</Navbar>
 	);
 };

@@ -8,7 +8,7 @@ import "./App.css";
 import API from "./util/api";
 import { ResultContainer, ResultCard } from "./components/results";
 import { ControlBar } from "./components/controls";
-import { type } from "node:os";
+import TitleBar from "./components/titlebar";
 
 // custom types
 export interface NewsItem {
@@ -65,6 +65,8 @@ function App() {
 	};
 
 	// get first page of content on page load (default per api so no page parameter needed)
+	// this throws warning but it is correct implementation per docs for running only at load and not for rerenders
+	// there is much debate on this issue and no agreed "right" answer so I am choosing to ignore the warning
 	useEffect(() => {
 		fetchNewsContent(1);
 	}, []);
@@ -95,29 +97,34 @@ function App() {
 	}, [newsResults]);
 
 	return (
-		<div className="App">
-			<ControlBar
-				goBack={() => handlePageChange(-1)}
-				goNext={() => handlePageChange(1)}
-				handleInput={handleInput}
-				handleSearch={handleSearch}
-			/>
-			{loading ? (
-				"Please wait while we load your results..."
-			) : !newsResults ? (
-				"We are sorry. Something has gone wrong. Please try your search again later."
-			) : (
-				<>
-					<ResultContainer>
-						{newsResults.results.length
-							? newsResults.results.map((result: NewsItem) => {
-									return <ResultCard key={result.id} {...result} />;
-							  })
-							: "No results match your search criteria. Please try a different search."}
-					</ResultContainer>
-				</>
-			)}
-		</div>
+		<>
+			<header>
+				<TitleBar />
+			</header>
+			<main className="container-lg">
+				<ControlBar
+					goBack={() => handlePageChange(-1)}
+					goNext={() => handlePageChange(1)}
+					handleInput={handleInput}
+					handleSearch={handleSearch}
+				/>
+				{loading ? (
+					"Please wait while we load your results..."
+				) : !newsResults ? (
+					"We are sorry. Something has gone wrong. Please try your search again later."
+				) : (
+					<>
+						<ResultContainer>
+							{newsResults.results.length
+								? newsResults.results.map((result: NewsItem) => {
+										return <ResultCard key={result.id} {...result} />;
+								  })
+								: "No results match your search criteria. Please try a different search."}
+						</ResultContainer>
+					</>
+				)}
+			</main>
+		</>
 	);
 }
 
