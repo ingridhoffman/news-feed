@@ -1,6 +1,7 @@
 /** @format */
 
 // Global
+import React, { ChangeEvent, FormEvent } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Pagination from "react-bootstrap/Pagination";
@@ -10,9 +11,11 @@ import Button from "react-bootstrap/Button";
 interface controlProps {
 	goBack: () => void;
 	goNext: () => void;
+	handleInput: (event: ChangeEvent<HTMLInputElement>) => void;
+	handleSearch: (event: FormEvent) => void;
 }
 
-export const ControlBar = ({ goBack, goNext }: controlProps) => {
+export const ControlBar = ({ goBack, goNext, handleInput, handleSearch }: controlProps) => {
 	return (
 		<Navbar bg="light" expand="lg">
 			<Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -23,6 +26,18 @@ export const ControlBar = ({ goBack, goNext }: controlProps) => {
 						<Pagination.Next onClick={goNext} />
 					</Pagination>
 				</Nav>
+				<Form inline onSubmit={handleSearch}>
+					<Form.Control
+						as="input"
+						type="text"
+						placeholder="Search"
+						className="mr-sm-2"
+						onChange={handleInput}
+					/>
+					<Button variant="outline-success" type="submit">
+						Search
+					</Button>
+				</Form>
 			</Navbar.Collapse>
 		</Navbar>
 	);

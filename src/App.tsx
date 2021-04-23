@@ -1,7 +1,7 @@
 /** @format */
 
 //global
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 
 //local
 import "./App.css";
@@ -46,9 +46,11 @@ const processNewsResults = (res: any): NewsFeed => {
 function App() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [newsResults, setNewsResults] = useState<NewsFeed>();
+	const [searchEntry, setSearchEntry] = useState<string>("");
 
-	const fetchNewsContent = (search: string, page: number) => {
-		API.guardianContent(search, page)
+	const fetchNewsContent = (page: number) => {
+		setLoading(true);
+		API.guardianContent(searchEntry, page)
 			.then((res) => {
 				let newResults: NewsFeed = processNewsResults(res.data.response);
 				setNewsResults(newResults);
@@ -64,19 +66,28 @@ function App() {
 
 	// get first page of content on page load (default per api so no page parameter needed)
 	useEffect(() => {
-		fetchNewsContent("", 1);
+		fetchNewsContent(1);
 	}, []);
 
-	// get specified page of content
 	const handlePageChange = (goTo: -1 | 1): void => {
 		// this function will only be called when there are news results so is there a better way to avoid typescript error that it might be undefined??
 		if (newsResults) {
 			let newPage: number = newsResults.page + goTo;
-			// prefer to disable buttons so these conditions will always be met
+			// disable buttons so these conditions will always be met
 			if (newPage >= 1 && newPage <= newsResults.totalPages) {
-				fetchNewsContent("", newPage);
+				fetchNewsContent(newPage);
 			}
 		}
+	};
+
+	const handleInput = (event: ChangeEvent<HTMLInputElement>): void => {
+		event.preventDefault();
+		setSearchEntry(event.target.value);
+	};
+
+	const handleSearch = (event: FormEvent) => {
+		event.preventDefault();
+		fetchNewsContent(1);
 	};
 
 	useEffect(() => {
@@ -85,13 +96,18 @@ function App() {
 
 	return (
 		<div className="App">
+			<ControlBar
+				goBack={() => handlePageChange(-1)}
+				goNext={() => handlePageChange(1)}
+				handleInput={handleInput}
+				handleSearch={handleSearch}
+			/>
 			{loading ? (
 				"Please wait while we load your results..."
 			) : !newsResults ? (
 				"We are sorry. Something has gone wrong. Please try your search again later."
 			) : (
 				<>
-					<ControlBar goBack={() => handlePageChange(-1)} goNext={() => handlePageChange(1)} />
 					<ResultContainer>
 						{newsResults.results.length
 							? newsResults.results.map((result: NewsItem) => {
