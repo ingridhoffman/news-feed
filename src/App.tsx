@@ -103,6 +103,8 @@ function App() {
 			</header>
 			<main className="container-lg">
 				<ControlBar
+					page={newsResults ? newsResults.page : 0}
+					lastPage={newsResults ? newsResults.totalPages : 0}
 					goBack={() => handlePageChange(-1)}
 					goNext={() => handlePageChange(1)}
 					handleInput={handleInput}
