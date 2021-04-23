@@ -72,13 +72,10 @@ function App() {
 	}, []);
 
 	const handlePageChange = (goTo: -1 | 1): void => {
-		// this function will only be called when there are news results so is there a better way to avoid typescript error that it might be undefined??
-		if (newsResults) {
-			let newPage: number = newsResults.page + goTo;
-			// disable buttons so these conditions will always be met
-			if (newPage >= 1 && newPage <= newsResults.totalPages) {
-				fetchNewsContent(newPage);
-			}
+		let newPage: number = newsResults!.page + goTo;
+		// conditions kept to avoid actions on multi-click of button before disable is registered
+		if (newPage >= 1 && newPage <= newsResults!.totalPages) {
+			fetchNewsContent(newPage);
 		}
 	};
 
@@ -97,6 +94,7 @@ function App() {
 	}, [newsResults]);
 
 	return (
+		// ui - styled messages component should be created for loading and errors
 		<>
 			<header>
 				<TitleBar />

@@ -27,6 +27,7 @@ export const ControlBar = ({
 }: controlProps) => {
 	return (
 		// ux consderations - not optimized for mobile, need page controls at bottom of feed or implement bottomless scroll
+		// bug - styling overrides needed to prevent search box from "bouncing" when clicked
 		<Navbar bg="light" expand="lg">
 			<Nav className="mr-auto">
 				<Pagination className="my-0">
